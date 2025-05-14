@@ -4,7 +4,7 @@ import requests
 app = Flask(__name__)
 
 # Gemini API Key yahan daalo
-GEMINI_API_KEY = "YOUR_GEMINI_API_KEY"
+GEMINI_API_KEY = "AIzaSyCTjwtdi45KmqcFPB6gDAHZwtn73h4VB-k"
 
 @app.route("/webhook", methods=["POST"])
 def webhook():
