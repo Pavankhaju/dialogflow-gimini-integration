@@ -1,0 +1,35 @@
+from flask import Flask, request, jsonify
+import requests
+
+app = Flask(__name__)
+
+# Gemini API Key yahan daalo
+GEMINI_API_KEY = "YOUR_GEMINI_API_KEY"
+
+@app.route("/webhook", methods=["POST"])
+def webhook():
+    req = request.get_json()
+    user_message = req.get("queryResult", {}).get("queryText", "")
+
+    # Gemini API call
+    gemini_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={GEMINI_API_KEY}"
+    headers = {"Content-Type": "application/json"}
+    payload = {
+        "contents": [{"parts": [{"text": user_message}]}]
+    }
+
+    gemini_response = requests.post(gemini_url, headers=headers, json=payload)
+
+    try:
+        gemini_reply = gemini_response.json()["candidates"][0]["content"]["parts"][0]["text"]
+    except:
+        gemini_reply = "Sorry, I couldn't generate a response."
+
+    return jsonify({
+        "fulfillmentMessages": [
+            {"text": {"text": [gemini_reply]}}
+        ]
+    })
+
+if __name__ == "__main__":
+    app.run()
