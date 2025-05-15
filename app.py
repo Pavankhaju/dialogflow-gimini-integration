@@ -8,19 +8,19 @@ app = Flask(__name__)
 GEMINI_API_KEY = "AIzaSyCTjwtdi45KmqcFPB6gDAHZwtn73h4VB-k"
 
 def detect_emotion_intent(user_text):
-    """Simple keyword-based emotion detection (can be upgraded with ML later)."""
+    """Detects basic emotion from the user's message based on keywords."""
     user_text = user_text.lower()
-    if any(word in user_text for word in ["udaas", "sad", "thak", "akela", "ro", "toot", "bechain"]):
+    if any(word in user_text for word in ["sad", "tired", "lonely", "cry", "broken", "hopeless"]):
         return "sad"
-    elif any(word in user_text for word in ["dar", "pareshan", "anxious", "tension", "ghabrahat"]):
+    elif any(word in user_text for word in ["scared", "worried", "anxious", "nervous", "stress"]):
         return "anxious"
-    elif any(word in user_text for word in ["motivation", "himmat", "positive", "hope", "energy"]):
+    elif any(word in user_text for word in ["motivation", "encouragement", "positive", "hope", "inspire"]):
         return "need_motivation"
     else:
         return "neutral"
 
 def build_gemini_prompt(user_message, emotion_type):
-    """Builds a customized prompt for Gemini based on the emotion."""
+    """Builds a tailored prompt for Gemini based on detected emotion."""
     if emotion_type == "sad":
         return f"The user is feeling sad. Respond with empathy and kindness. Make them feel understood and supported. Message: '{user_message}'"
     elif emotion_type == "anxious":
@@ -28,17 +28,17 @@ def build_gemini_prompt(user_message, emotion_type):
     elif emotion_type == "need_motivation":
         return f"The user is seeking motivation. Respond with uplifting and positive encouragement. Message: '{user_message}'"
     else:
-        return f"Respond supportively to the user's message: '{user_message}'"
+        return f"Respond supportively and helpfully to the user's message: '{user_message}'"
 
 @app.route("/webhook", methods=["POST"])
 def webhook():
     req = request.get_json()
     user_message = req.get("queryResult", {}).get("queryText", "")
 
-    # Emotion intent detection
+    # Detect emotional intent
     emotion = detect_emotion_intent(user_message)
 
-    # Gemini prompt
+    # Create Gemini prompt
     prompt = build_gemini_prompt(user_message, emotion)
 
     # Gemini API call
@@ -53,7 +53,7 @@ def webhook():
     try:
         gemini_reply = gemini_response.json()["candidates"][0]["content"]["parts"][0]["text"]
     except:
-        gemini_reply = "Sorry, I couldn't generate a response."
+        gemini_reply = "Sorry, I couldn't generate a response right now."
 
     return jsonify({
         "fulfillmentMessages": [
