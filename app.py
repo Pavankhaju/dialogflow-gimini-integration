@@ -35,13 +35,9 @@ def webhook():
     req = request.get_json()
     user_message = req.get("queryResult", {}).get("queryText", "")
 
-    # Detect emotional intent
     emotion = detect_emotion_intent(user_message)
-
-    # Create Gemini prompt
     prompt = build_gemini_prompt(user_message, emotion)
 
-    # Gemini API call
     gemini_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={GEMINI_API_KEY}"
     headers = {"Content-Type": "application/json"}
     payload = {
@@ -49,12 +45,15 @@ def webhook():
     }
 
     gemini_response = requests.post(gemini_url, headers=headers, json=payload)
-    print("Gemini raw response:",gemini_response.text)
+    response_text = gemini_response.text
+    print("Gemini raw response:", response_text)
 
     try:
-        gemini_reply = gemini_response.json()["candidates"][0]["content"]["parts"][0]["text"]
-    except:
-        gemini_reply = "Sorry, I couldn't generate a response right now."
+        response_json = gemini_response.json()
+        gemini_reply = response_json["candidates"][0]["content"]["parts"][0]["text"]
+    except Exception as e:
+        print("Error parsing Gemini response:", str(e))
+        gemini_reply = f"Gemini failed. Raw response: {response_text}"
 
     return jsonify({
         "fulfillmentMessages": [
