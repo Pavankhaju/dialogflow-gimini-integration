@@ -1,13 +1,13 @@
 from flask import Flask, request, jsonify
 import requests
 import os
-import sys
 
 app = Flask(__name__)
 
-# Gemini API Key
-GEMINI_API_KEY = "AIzaSyCjAEH59q2gtBqFgBVh1Rh0PHOEd6eHTIk"  # <<== Yahan apni API key daalna
+# Replace this with your actual Gemini (PaLM) API key
+GEMINI_API_KEY = "AIzaSyCjAEH59q2gtBqFgBVh1Rh0PHOEd6eHTIk"
 
+# Emotion detection based on keywords
 def detect_emotion_intent(user_text):
     user_text = user_text.lower()
     if any(word in user_text for word in ["sad", "tired", "lonely", "cry", "broken", "hopeless"]):
@@ -19,16 +19,18 @@ def detect_emotion_intent(user_text):
     else:
         return "neutral"
 
+# Build prompt according to emotion
 def build_gemini_prompt(user_message, emotion_type):
     if emotion_type == "sad":
-        return f"The user is feeling sad. Respond with empathy and kindness. Make them feel understood and supported. Message: '{user_message}'"
+        return f"The user is feeling sad. Respond with empathy and kindness. Message: '{user_message}'"
     elif emotion_type == "anxious":
-        return f"The user is anxious or stressed. Respond calmly and reassuringly. Help them relax and feel safe. Message: '{user_message}'"
+        return f"The user is anxious or stressed. Respond calmly and supportively. Message: '{user_message}'"
     elif emotion_type == "need_motivation":
-        return f"The user is seeking motivation. Respond with uplifting and positive encouragement. Message: '{user_message}'"
+        return f"The user needs motivation. Respond with uplifting and encouraging words. Message: '{user_message}'"
     else:
-        return f"Respond supportively and helpfully to the user's message: '{user_message}'"
+        return f"Respond helpfully to the user message: '{user_message}'"
 
+# Webhook for Dialogflow
 @app.route("/webhook", methods=["POST"])
 def webhook():
     req = request.get_json()
@@ -37,27 +39,20 @@ def webhook():
     emotion = detect_emotion_intent(user_message)
     prompt = build_gemini_prompt(user_message, emotion)
 
-    gemini_url = f"https://generativelanguage.googleapis.com/v1beta2/models/text-bison-001:generateText?key={GEMINI_API_KEY}"
+    # Endpoint for Text-Bison
+    gemini_url = f"https://generativelanguage.googleapis.com/v1beta/models/text-bison-001:generateText?key={GEMINI_API_KEY}"
     headers = {"Content-Type": "application/json"}
-    payload = {
-        "prompt": {
-            "text": prompt
-        }
-    }
+    payload = { "prompt": { "text": prompt } }
 
     gemini_response = requests.post(gemini_url, headers=headers, json=payload)
     response_text = gemini_response.text
-
     print("Gemini raw response:", response_text)
-    sys.stdout.flush()
 
     try:
         response_json = gemini_response.json()
         gemini_reply = response_json["candidates"][0]["output"]
     except Exception as e:
         print("Error parsing Gemini response:", str(e))
-        print("Full response text:", response_text)
-        sys.stdout.flush()
         gemini_reply = "Sorry, I couldn't generate a response."
 
     return jsonify({
