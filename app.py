@@ -41,8 +41,15 @@ def webhook():
     gemini_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={GEMINI_API_KEY}"
     headers = {"Content-Type": "application/json"}
     payload = {
-        "contents": [{"parts": [{"text": prompt}]}]
-    }
+        "contents": [
+        {
+            "role": "user",
+            "parts": [
+                {"text": user_message}
+            ]
+        }
+    ]
+}
 
     gemini_response = requests.post(gemini_url, headers=headers, json=payload)
     response_text = gemini_response.text
