@@ -1,14 +1,14 @@
 from flask import Flask, request, jsonify
 import requests
 import os
+import sys
 
-app = Flask(__name__)
+app = Flask(_name_)
 
 # Gemini API Key
-GEMINI_API_KEY = "AIzaSyCjAEH59q2gtBqFgBVh1Rh0PHOEd6eHTIk"
+GEMINI_API_KEY = "AIzaSyCjAEH59q2gtBqFgBVh1Rh0PHOEd6eHTIk"  # <<== Yahan apni API key daalna
 
 def detect_emotion_intent(user_text):
-    """Detects basic emotion from the user's message based on keywords."""
     user_text = user_text.lower()
     if any(word in user_text for word in ["sad", "tired", "lonely", "cry", "broken", "hopeless"]):
         return "sad"
@@ -20,7 +20,6 @@ def detect_emotion_intent(user_text):
         return "neutral"
 
 def build_gemini_prompt(user_message, emotion_type):
-    """Builds a tailored prompt for Gemini based on detected emotion."""
     if emotion_type == "sad":
         return f"The user is feeling sad. Respond with empathy and kindness. Make them feel understood and supported. Message: '{user_message}'"
     elif emotion_type == "anxious":
@@ -48,14 +47,17 @@ def webhook():
 
     gemini_response = requests.post(gemini_url, headers=headers, json=payload)
     response_text = gemini_response.text
+
     print("Gemini raw response:", response_text)
+    sys.stdout.flush()
 
     try:
         response_json = gemini_response.json()
-        print("Parsed JSON:", response_json)
         gemini_reply = response_json["candidates"][0]["output"]
     except Exception as e:
         print("Error parsing Gemini response:", str(e))
+        print("Full response text:", response_text)
+        sys.stdout.flush()
         gemini_reply = "Sorry, I couldn't generate a response."
 
     return jsonify({
@@ -64,6 +66,6 @@ def webhook():
         ]
     })
 
-if __name__ == "__main__":
+if _name_ == "_main_":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
