@@ -4,19 +4,48 @@ import os
 
 app = Flask(__name__)
 
-# Gemini API Key yahan daalo
+# Gemini API Key
 GEMINI_API_KEY = "AIzaSyCTjwtdi45KmqcFPB6gDAHZwtn73h4VB-k"
+
+def detect_emotion_intent(user_text):
+    """Simple keyword-based emotion detection (can be upgraded with ML later)."""
+    user_text = user_text.lower()
+    if any(word in user_text for word in ["udaas", "sad", "thak", "akela", "ro", "toot", "bechain"]):
+        return "sad"
+    elif any(word in user_text for word in ["dar", "pareshan", "anxious", "tension", "ghabrahat"]):
+        return "anxious"
+    elif any(word in user_text for word in ["motivation", "himmat", "positive", "hope", "energy"]):
+        return "need_motivation"
+    else:
+        return "neutral"
+
+def build_gemini_prompt(user_message, emotion_type):
+    """Builds a customized prompt for Gemini based on the emotion."""
+    if emotion_type == "sad":
+        return f"The user is feeling sad. Respond with empathy and kindness. Make them feel understood and supported. Message: '{user_message}'"
+    elif emotion_type == "anxious":
+        return f"The user is anxious or stressed. Respond calmly and reassuringly. Help them relax and feel safe. Message: '{user_message}'"
+    elif emotion_type == "need_motivation":
+        return f"The user is seeking motivation. Respond with uplifting and positive encouragement. Message: '{user_message}'"
+    else:
+        return f"Respond supportively to the user's message: '{user_message}'"
 
 @app.route("/webhook", methods=["POST"])
 def webhook():
     req = request.get_json()
     user_message = req.get("queryResult", {}).get("queryText", "")
 
+    # Emotion intent detection
+    emotion = detect_emotion_intent(user_message)
+
+    # Gemini prompt
+    prompt = build_gemini_prompt(user_message, emotion)
+
     # Gemini API call
     gemini_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={GEMINI_API_KEY}"
     headers = {"Content-Type": "application/json"}
     payload = {
-        "contents": [{"parts": [{"text": user_message}]}]
+        "contents": [{"parts": [{"text": prompt}]}]
     }
 
     gemini_response = requests.post(gemini_url, headers=headers, json=payload)
