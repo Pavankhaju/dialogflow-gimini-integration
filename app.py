@@ -4,7 +4,7 @@ import os
 
 app = Flask(__name__)
 
-# Gemini API Key - apni key yahan daal
+# Gemini API Key
 GEMINI_API_KEY = "AIzaSyCjAEH59q2gtBqFgBVh1Rh0PHOEd6eHTIk"
 
 def detect_emotion_intent(user_text):
@@ -50,16 +50,15 @@ def webhook():
     response_text = gemini_response.text
     print("Gemini raw response:", response_text)
 
-try:   
-    response_json = gemini_response.json()
-    print("Parsed JSON:", response_json)
-    gemini_reply = response_json["candidates"][0]["content"]
-except Exception as e:
-    print("Error parsing Gemini response:", str(e))
-    print("Full response text:", response_text)
-    gemini_reply = "Sorry, I couldn't generate a response."
-   
-return jsonify({
+    try:
+        response_json = gemini_response.json()
+        print("Parsed JSON:", response_json)
+        gemini_reply = response_json["candidates"][0]["output"]
+    except Exception as e:
+        print("Error parsing Gemini response:", str(e))
+        gemini_reply = "Sorry, I couldn't generate a response."
+
+    return jsonify({
         "fulfillmentMessages": [
             {"text": {"text": [gemini_reply]}}
         ]
