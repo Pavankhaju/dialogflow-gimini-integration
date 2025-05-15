@@ -49,6 +49,7 @@ def webhook():
     }
 
     gemini_response = requests.post(gemini_url, headers=headers, json=payload)
+    print("Gemini raw response:",gemini_response.text)
 
     try:
         gemini_reply = gemini_response.json()["candidates"][0]["content"]["parts"][0]["text"]
