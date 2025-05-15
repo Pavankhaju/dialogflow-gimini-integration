@@ -50,7 +50,7 @@ def webhook():
     response_text = gemini_response.text
     print("Gemini raw response:", response_text)
 
-    try:
+try:   
     response_json = gemini_response.json()
     print("Parsed JSON:", response_json)
     gemini_reply = response_json["candidates"][0]["content"]
