@@ -5,7 +5,7 @@ import os
 app = Flask(__name__)
 
 # Gemini API Key
-GEMINI_API_KEY = "AIzaSyCTjwtdi45KmqcFPB6gDAHZwtn73h4VB-k"
+GEMINI_API_KEY = "AIzaSyCjAEH59q2gtBqFgBVh1Rh0PHOEd6eHTIk"
 
 def detect_emotion_intent(user_text):
     """Detects basic emotion from the user's message based on keywords."""
