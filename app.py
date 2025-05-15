@@ -37,7 +37,7 @@ def webhook():
     emotion = detect_emotion_intent(user_message)
     prompt = build_gemini_prompt(user_message, emotion)
 
-    gemini_url = f"https://generativelanguage.googleapis.com/v1beta/models/text-bison-001:generateText?key={GEMINI_API_KEY}"
+   gemini_url = f"https://generativelanguage.googleapis.com/v1beta2/models/text-bison-001:generateText?key={GEMINI_API_KEY}"
     headers = {"Content-Type": "application/json"}
     payload = {
         "prompt": {
