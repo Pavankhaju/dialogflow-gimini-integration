@@ -2,9 +2,9 @@ from flask import Flask, request, jsonify
 import requests
 import os
 
-app = Flask(__name__)
+app = Flask(_name_)
 
-# Gemini API Key
+# Gemini API Key - apni key yahan daal
 GEMINI_API_KEY = "AIzaSyCjAEH59q2gtBqFgBVh1Rh0PHOEd6eHTIk"
 
 def detect_emotion_intent(user_text):
@@ -38,18 +38,13 @@ def webhook():
     emotion = detect_emotion_intent(user_message)
     prompt = build_gemini_prompt(user_message, emotion)
 
-    gemini_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={GEMINI_API_KEY}"
+    gemini_url = f"https://generativelanguage.googleapis.com/v1beta/models/text-bison-001:generateText?key={GEMINI_API_KEY}"
     headers = {"Content-Type": "application/json"}
     payload = {
-        "contents": [
-        {
-            "role": "user",
-            "parts": [
-                {"text": user_message}
-            ]
+        "prompt": {
+            "text": prompt
         }
-    ]
-}
+    }
 
     gemini_response = requests.post(gemini_url, headers=headers, json=payload)
     response_text = gemini_response.text
@@ -57,10 +52,10 @@ def webhook():
 
     try:
         response_json = gemini_response.json()
-        gemini_reply = response_json["candidates"][0]["content"]["parts"][0]["text"]
+        gemini_reply = response_json["candidates"][0]["content"]
     except Exception as e:
         print("Error parsing Gemini response:", str(e))
-        gemini_reply = f"Gemini failed. Raw response: {response_text}"
+        gemini_reply = f"Sorry, I couldn't generate a response."
 
     return jsonify({
         "fulfillmentMessages": [
@@ -68,6 +63,6 @@ def webhook():
         ]
     })
 
-if __name__ == "__main__":
+if _name_ == "_main_":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
