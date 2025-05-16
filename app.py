@@ -56,7 +56,7 @@ except Exception as e:
     print("Error parsing Gemini response:", str(e))
     print("Full response text:", response_text)
     gemini_reply = "Sorry, I couldn't generate a response."
-    return jsonify({
+return jsonify({
         "fulfillmentMessages": [
             {"text": {"text": [gemini_reply]}}
         ]
