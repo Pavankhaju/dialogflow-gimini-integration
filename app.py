@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 import requests
 import os
 
-app = Flask(__name__)
+app = Flask(_name_)
 
 # Replace this with your actual Gemini (PaLM) API key
 GEMINI_API_KEY = "AIzaSyCjAEH59q2gtBqFgBVh1Rh0PHOEd6eHTIk"
@@ -38,8 +38,8 @@ def webhook():
 
     emotion = detect_emotion_intent(user_message)
     prompt = build_gemini_prompt(user_message, emotion)
+    print("Prompt sent to Gemini:", prompt)
 
-    # Endpoint for Text-Bison
     gemini_url = f"https://generativelanguage.googleapis.com/v1beta/models/text-bison-001:generateText?key={GEMINI_API_KEY}"
     headers = {"Content-Type": "application/json"}
     payload = { "prompt": { "text": prompt } }
@@ -47,21 +47,22 @@ def webhook():
     gemini_response = requests.post(gemini_url, headers=headers, json=payload)
     response_text = gemini_response.text
     print("Gemini raw response:", response_text)
- 
-try:
-    response_json = gemini_response.json()
-    print("Parsed JSON:", response_json)
-    gemini_reply = response_json["candidates"][0]["output"]
-except Exception as e:
-    print("Error parsing Gemini response:", str(e))
-    print("Full response text:", response_text)
-    gemini_reply = "Sorry, I couldn't generate a response."
-return jsonify({
+
+    try:
+        response_json = gemini_response.json()
+        print("Parsed JSON:", response_json)
+        gemini_reply = response_json["candidates"][0]["output"]
+    except Exception as e:
+        print("Error parsing Gemini response:", str(e))
+        print("Full response text:", response_text)
+        gemini_reply = "Sorry, I couldn't generate a response."
+
+    return jsonify({
         "fulfillmentMessages": [
             {"text": {"text": [gemini_reply]}}
         ]
     })
 
-if __name__ == "__main__":
+if _name_ == "_main_":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
