@@ -47,14 +47,15 @@ def webhook():
     gemini_response = requests.post(gemini_url, headers=headers, json=payload)
     response_text = gemini_response.text
     print("Gemini raw response:", response_text)
-
-    try:
-        response_json = gemini_response.json()
-        gemini_reply = response_json["candidates"][0]["output"]
-    except Exception as e:
-        print("Error parsing Gemini response:", str(e))
-        gemini_reply = "Sorry, I couldn't generate a response."
-
+ 
+try:
+    response_json = gemini_response.json()
+    print("Parsed JSON:", response_json)
+    gemini_reply = response_json["candidates"][0]["output"]
+except Exception as e:
+    print("Error parsing Gemini response:", str(e))
+    print("Full response text:", response_text)
+    gemini_reply = "Sorry, I couldn't generate a response."
     return jsonify({
         "fulfillmentMessages": [
             {"text": {"text": [gemini_reply]}}
