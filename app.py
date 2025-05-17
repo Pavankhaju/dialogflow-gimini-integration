@@ -3,7 +3,7 @@ from google.oauth2 import service_account
 from google.auth.transport.requests import AuthorizedSession
 import os
 
-app = Flask(_name_)
+app = Flask(__name__)
 
 # Service account file ka path environment variable se lo (Render me ye secret file ka naam hoga)
 SERVICE_ACCOUNT_FILE = os.getenv("SERVICE_ACCOUNT_FILE", "service_account.json")
@@ -74,6 +74,6 @@ def webhook():
         ]
     })
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
