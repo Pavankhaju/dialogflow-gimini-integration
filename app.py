@@ -3,11 +3,15 @@ import google.auth
 from google.oauth2 import service_account
 from google.auth.transport.requests import AuthorizedSession
 import os
+from dotenv import load_dotenv
+load_dotenv()
 
 app = Flask(_name_)
 
 # Service Account JSON file path yahan de
-SERVICE_ACCOUNT_FILE = "C:\Users\ratho\OneDrive\Desktop\json"
+SERVICE_ACCOUNT_PATH = os.getenv("C:\Users\ratho\OneDrive\Desktop\json")
+port = int(os.getenv("PORT",5000))
+
 
 # Scopes required for PaLM API
 SCOPES = ["https://www.googleapis.com/auth/cloud-platform"]
