@@ -3,8 +3,6 @@ import google.auth
 from google.oauth2 import service_account
 from google.auth.transport.requests import AuthorizedSession
 import os
-from dotenv import load_dotenv
-load_dotenv()
 
 app = Flask(_name_)
 
