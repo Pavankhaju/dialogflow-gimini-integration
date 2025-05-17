@@ -9,7 +9,7 @@ load_dotenv()
 app = Flask(_name_)
 
 # Service Account JSON file path yahan de
-SERVICE_ACCOUNT_PATH = os.getenv("C:\Users\ratho\OneDrive\Desktop\json")
+SERVICE_ACCOUNT_PATH = "C:/Users/ratho/OneDrive/Desktop/json/sarthibot-surl-88ef1c1c0fd1"
 port = int(os.getenv("PORT",5000))
 
 
