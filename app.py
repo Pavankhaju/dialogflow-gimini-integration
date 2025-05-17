@@ -1,25 +1,22 @@
 from flask import Flask, request, jsonify
-import google.auth
 from google.oauth2 import service_account
 from google.auth.transport.requests import AuthorizedSession
 import os
 
-app = Flask(__name__)
+app = Flask(_name_)
 
-# Service Account JSON file path yahan de
-SERVICE_ACCOUNT_FILE = "C:/Users/ratho/OneDrive/Desktop/json/sarthibot-surl-88ef1c1c0fd1"
-port = int(os.getenv("PORT",5000))
-
+# Service account file ka path environment variable se lo (Render me ye secret file ka naam hoga)
+SERVICE_ACCOUNT_FILE = os.getenv("SERVICE_ACCOUNT_FILE", "service_account.json")
 
 # Scopes required for PaLM API
 SCOPES = ["https://www.googleapis.com/auth/cloud-platform"]
 
-# Authenticate using service account file
+# Credentials create karo
 credentials = service_account.Credentials.from_service_account_file(
     SERVICE_ACCOUNT_FILE, scopes=SCOPES
 )
 
-# Authorized session banate hain jo API requests karega
+# Authorized session banate hain
 authed_session = AuthorizedSession(credentials)
 
 def detect_emotion_intent(user_text):
@@ -52,7 +49,6 @@ def webhook():
     prompt = build_gemini_prompt(user_message, emotion)
     print("Prompt sent to Gemini:", prompt)
 
-    # PaLM Text-Bison API endpoint
     gemini_url = "https://generativelanguage.googleapis.com/v1beta/models/text-bison-001:generateText"
 
     payload = {
@@ -61,7 +57,6 @@ def webhook():
         }
     }
 
-    # Authorized request using service account credentials
     gemini_response = authed_session.post(gemini_url, json=payload)
     response_text = gemini_response.text
     print("Gemini raw response:", response_text)
@@ -79,6 +74,6 @@ def webhook():
         ]
     })
 
-if __name__ == "__main__":
+if _name_ == "_main_":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
