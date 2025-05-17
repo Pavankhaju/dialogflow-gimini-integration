@@ -7,7 +7,7 @@ import os
 app = Flask(__name__)
 
 # Service Account JSON file path yahan de
-SERVICE_ACCOUNT_PATH = "C:/Users/ratho/OneDrive/Desktop/json/sarthibot-surl-88ef1c1c0fd1"
+SERVICE_ACCOUNT_FILE = "C:/Users/ratho/OneDrive/Desktop/json/sarthibot-surl-88ef1c1c0fd1"
 port = int(os.getenv("PORT",5000))
 
 
