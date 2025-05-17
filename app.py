@@ -4,7 +4,7 @@ from google.oauth2 import service_account
 from google.auth.transport.requests import AuthorizedSession
 import os
 
-app = Flask(_name_)
+app = Flask(__name__)
 
 # Service Account JSON file path yahan de
 SERVICE_ACCOUNT_PATH = "C:/Users/ratho/OneDrive/Desktop/json/sarthibot-surl-88ef1c1c0fd1"
@@ -79,6 +79,6 @@ def webhook():
         ]
     })
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
